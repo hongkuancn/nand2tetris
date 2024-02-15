@@ -12,5 +12,36 @@ CHIP Mux16 {
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    /* sel(0) -> 0000000000000000 */
+    /* sel(1) -> 1111111111111111 */
+    And16(a=true,b[0]=sel,b[1..15]=true,out[0..15]=selw1);
+    And16(a=selw1,b[0]=true,b[1]=sel,b[2..15]=true,out=selw2);
+    And16(a=selw2,b[0..1]=true,b[2]=sel,b[3..15]=true,out=selw3);
+    And16(a=selw3,b[0..2]=true,b[3]=sel,b[4..15]=true,out=selw4);
+    And16(a=selw4,b[0..3]=true,b[4]=sel,b[5..15]=true,out=selw5);
+    And16(a=selw5,b[0..4]=true,b[5]=sel,b[6..15]=true,out=selw6);
+    And16(a=selw6,b[0..5]=true,b[6]=sel,b[7..15]=true,out=selw7);
+    And16(a=selw7,b[0..6]=true,b[7]=sel,b[8..15]=true,out=selw8);
+    And16(a=selw8,b[0..7]=true,b[8]=sel,b[9..15]=true,out=selw9);
+    And16(a=selw9,b[0..8]=true,b[9]=sel,b[10..15]=true,out=selw10);
+    And16(a=selw10,b[0..9]=true,b[10]=sel,b[11..15]=true,out=selw11);
+    And16(a=selw11,b[0..10]=true,b[11]=sel,b[12..15]=true,out=selw12);
+    And16(a=selw12,b[0..11]=true,b[12]=sel,b[13..15]=true,out=selw13);
+    And16(a=selw13,b[0..12]=true,b[13]=sel,b[14..15]=true,out=selw14);
+    And16(a=selw14,b[0..13]=true,b[14]=sel,b[15]=true,out=selw15);
+    And16(a=selw15,b[0..14]=true,b[15]=sel,out=selarr);
+
+    Not16(in=a,out=nota);
+    Not16(in=b,out=notb);
+    Not16(in=selarr,out=notsel);
+    And16(a=a,b=notb,out=w1m);
+    And16(a=w1m,b=notsel,out=w1out);
+    And16(a=a,b=b,out=w2m);
+    And16(a=w2m,b=notsel,out=w2out);
+    And16(a=nota,b=b,out=w3m);
+    And16(a=w3m,b=selarr,out=w3out);
+    And16(a=w2m,b=selarr,out=w4out);
+    Or16(a=w1out,b=w2out,out=r1);
+    Or16(a=r1,b=w3out,out=r2);
+    Or16(a=r2,b=w4out,out=out);
 }
