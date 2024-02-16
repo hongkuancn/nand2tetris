@@ -11,5 +11,30 @@ CHIP FullAdder {
         carry;   // Left bit of a + b + c
 
     PARTS:
-    //// Replace this comment with your code.
+    Not(in=a,out=nota);
+    Not(in=b,out=notb);
+    Not(in=c,out=notc);
+    And(a=a,b=b,out=ab);
+    And(a=ab,b=c,out=abc);
+
+    And(a=nota,b=notb,out=notanotb);
+    And(a=notanotb,b=c,out=notanotbc);
+    And(a=nota,b=notc,out=notanotc);
+    And(a=notanotc,b=b,out=notabnotc);
+    And(a=notb,b=notc,out=notbnotc);
+    And(a=notbnotc,b=a,out=anotbnotc);
+
+    Or(a=notanotbc,b=notabnotc,out=w1);
+    Or(a=w1,b=anotbnotc,out=w2);
+    Or(a=w2,b=abc,out=sum);
+
+    And(a=nota,b=b,out=notab);
+    And(a=notab,b=c,out=notabc);
+    And(a=a,b=c,out=ac);
+    And(a=ac,b=notb,out=anotbc);
+    And(a=ab,b=notc,out=abnotc);
+
+    Or(a=notabc,b=anotbc,out=w3);
+    Or(a=w3,b=abnotc,out=w4);
+    Or(a=w4,b=abc,out=carry);
 }
