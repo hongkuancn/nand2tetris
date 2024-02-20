@@ -19,5 +19,12 @@ CHIP Memory {
     OUT out[16];
 
     PARTS:
-    //// Replace this comment with your code.
+    /* 根据前3位判断进入哪个区间 */
+    DMux8Way(in=load, sel=address[12..14], a=a, b=b, c=c, d=d, e=e, f=f, g=g, h=h);
+    Or8Way(in[0]=a, in[1]=b, in[2]=c, in[3]=d, out=ramload);
+    Or8Way(in[0]=e, in[1]=f, out=screenload);
+    RAM16K(in=in, load=ramload, address=address[0..13], out=rout);
+    Screen(in=in, load=screenload, address=address[0..12], out=sout);
+    Keyboard(out=kout);
+    Mux8Way16(a=rout, b=rout, c=rout, d=rout, e=sout, f=sout, g=kout, h=false, sel=address[12..14], out=out);
 }

@@ -32,5 +32,51 @@ CHIP CPU {
         pc[15];          // Address of next instruction
 
     PARTS:
-    //// Replace this comment with your code.
+    DMux(in=true, sel=instruction[15], a=isa, b=isc);
+    Mux16(a=instruction, b=aluoutput, sel=instruction[15], out=ain);
+
+    And(a=isc, b=instruction[5], out=csavea);
+    Or(a=csavea, b=isa, out=savea);
+    ARegister(in=ain, load=savea, out=arout, out[0..14]=addressM);
+
+    And(a=isc, b=instruction[4], out=saved);
+    DRegister(in=aluoutput, load=saved, out=drout);
+
+    And(a=isc, b=instruction[12], out=aorm);
+    Mux16(a=arout, b=inM, sel=aorm, out=aluy);
+    
+    And(a=isc, b=instruction[11], out=zx);
+    And(a=isc, b=instruction[10], out=nx);
+    And(a=isc, b=instruction[9], out=zy);
+    And(a=isc, b=instruction[8], out=ny);
+    And(a=isc, b=instruction[7], out=f);
+    And(a=isc, b=instruction[6], out=no);
+    ALU(x=drout, y=aluy, zx=zx, nx=nx, zy=zy, ny=ny, f=f, no=no, out=aluoutput, zr=zr, ng=ng, out=outM);
+
+    // 可以简化 
+    DMux8Way(in=isc, sel=instruction[0..2], a=null, b=jgt, c=jeq, d=jge, e=jlt, f=jne, g=jle, h=jmp);
+    // Not(in=zr, out=notzr);
+    // Not(in=ng, out=notng);
+    // And(a=zr, b=jeq, out=w1);
+    // And(a=zr, b=jge, out=w2);
+    // And(a=zr, b=jle, out=w3);
+    // And(a=ng, b=jlt, out=w4);
+    // And(a=ng, b=jne, out=w5);
+    // And(a=ng, b=jle, out=w6);
+    // And(a=notzr, b=jne, out=w7);
+    // And(a=notng, b=jge, out=w8);
+    // And(a=notng, b=notzr, out=twonot);
+    // And(a=twonot, b=jgt, out=w9);
+    // Or8Way(in[0]=jmp, in[1]=w1, in[2]=w2, in[3]=w3, in[4]=w4, in[5]=w5, in[6]=w6, in[7]=w7, out=loadpc1);
+    // Or8Way(in[0]=loadpc1, in[1]=w8, in[2]=w9, out=loadpc);
+    And(a=zr, b=jeq, out=w1);
+    And(a=ng, b=jlt, out=w2);
+    Not(in=zr, out=notzr);
+    Not(in=ng, out=notng);
+    And(a=notng, b=notzr, out=twonot);
+    And(a=twonot, b=jgt, out=w3);
+    Or8Way(in[0]=jmp, in[1]=w1, in[2]=w2, in[3]=w3, out=loadpc);
+    PC(in=arout, load=loadpc, inc=true, reset=reset, out[0..14]=pc);
+    
+    And(a=instruction[3], b=isc, out=writeM);
 }
