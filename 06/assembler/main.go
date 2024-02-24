@@ -92,9 +92,8 @@ func main() {
 }
 
 type Parser struct {
-	file    string
-	content []byte
-	lines   []string
+	file  string
+	lines []string
 }
 
 func NewParser(input string) *Parser {
