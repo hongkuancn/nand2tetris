@@ -540,7 +540,7 @@ outfor:
 }
 
 func (c *CompilationEngine) compileLet() error {
-	c.res = append(c.res, []byte("<letStatements>\n")...)
+	c.res = append(c.res, []byte("<letStatement>\n")...)
 	c.process("let", KEYWORD)
 	c.process(c.tokens[c.index], IDENTIFIER)
 	if c.tokens[c.index] == "[" {
@@ -559,12 +559,12 @@ func (c *CompilationEngine) compileLet() error {
 		return err
 	}
 	c.process(";", SYMBOL)
-	c.res = append(c.res, []byte("</letStatements>\n")...)
+	c.res = append(c.res, []byte("</letStatement>\n")...)
 	return nil
 }
 
 func (c *CompilationEngine) compileIf() error {
-	c.res = append(c.res, []byte("<ifStatements>\n")...)
+	c.res = append(c.res, []byte("<ifStatement>\n")...)
 	c.process("if", KEYWORD)
 	c.process("(", SYMBOL)
 	err := c.compileExpression()
@@ -590,12 +590,12 @@ func (c *CompilationEngine) compileIf() error {
 		}
 		c.process("}", SYMBOL)
 	}
-	c.res = append(c.res, []byte("</ifStatements>\n")...)
+	c.res = append(c.res, []byte("</ifStatement>\n")...)
 	return nil
 }
 
 func (c *CompilationEngine) compileWhile() error {
-	c.res = append(c.res, []byte("<whileStatements>\n")...)
+	c.res = append(c.res, []byte("<whileStatement>\n")...)
 	c.process("while", KEYWORD)
 	c.process("(", SYMBOL)
 	err := c.compileExpression()
@@ -611,12 +611,12 @@ func (c *CompilationEngine) compileWhile() error {
 		return err
 	}
 	c.process("}", SYMBOL)
-	c.res = append(c.res, []byte("</whileStatements>\n")...)
+	c.res = append(c.res, []byte("</whileStatement>\n")...)
 	return nil
 }
 
 func (c *CompilationEngine) compileDo() error {
-	c.res = append(c.res, []byte("<doStatements>\n")...)
+	c.res = append(c.res, []byte("<doStatement>\n")...)
 	c.process("do", KEYWORD)
 	if tokenType(c.tokens[c.index]) == IDENTIFIER {
 		// copied from compileTerm
@@ -643,11 +643,11 @@ func (c *CompilationEngine) compileDo() error {
 		}
 	}
 	c.process(";", SYMBOL)
-	c.res = append(c.res, []byte("</doStatements>\n")...)
+	c.res = append(c.res, []byte("</doStatement>\n")...)
 	return nil
 }
 func (c *CompilationEngine) compileReturn() error {
-	c.res = append(c.res, []byte("<returnStatements>\n")...)
+	c.res = append(c.res, []byte("<returnStatement>\n")...)
 	c.process("return", KEYWORD)
 	if c.tokens[c.index] != ";" {
 		err := c.compileExpression()
@@ -657,7 +657,7 @@ func (c *CompilationEngine) compileReturn() error {
 		}
 	}
 	c.process(";", SYMBOL)
-	c.res = append(c.res, []byte("</returnStatements>\n")...)
+	c.res = append(c.res, []byte("</returnStatement>\n")...)
 	return nil
 }
 
@@ -707,7 +707,7 @@ func (c *CompilationEngine) compileTerm() error {
 	if tokenType(c.tokens[c.index]) == INT_CONST {
 		c.process(c.tokens[c.index], INT_CONST)
 	} else if tokenType(c.tokens[c.index]) == STR_CONST {
-		c.process(c.tokens[c.index], INT_CONST)
+		c.process(c.tokens[c.index], STR_CONST)
 	} else if c.tokens[c.index] == "true" || c.tokens[c.index] == "false" || c.tokens[c.index] == "null" || c.tokens[c.index] == "this" {
 		c.process(c.tokens[c.index], KEYWORD)
 	} else if tokenType(c.tokens[c.index]) == IDENTIFIER {
