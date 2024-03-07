@@ -7,28 +7,97 @@
  * This library provides two services: direct access to the computer's main
  * memory (RAM), and allocation and recycling of memory blocks. The Hack RAM
  * consists of 32,768 words, each holding a 16-bit binary number.
- */ 
+ */
 class Memory {
+
+    static Array memory;
+    static Array heapBase;
+    static int heapSize;
 
     /** Initializes the class. */
     function void init() {
+        var Array tmp;
+
+        let heapBase = 2048;
+        let heapSize = 30720;
+
+        // sentinel segment
+        let heapBase[0] = 0;
+        let heapBase[1] = heapBase + 2;
+
+        // first allocatable segment
+        let tmp = heapBase + 2;
+        let tmp[0] = heapSize - 2;
+        let tmp[1] = 0;
+
+        let heapSize = heapSize - 2;
+        return;
     }
 
     /** Returns the RAM value at the given address. */
     function int peek(int address) {
+        let memory = address;
+        return memory[0];
     }
 
     /** Sets the RAM value at the given address to the given value. */
     function void poke(int address, int value) {
+        let memory = address;
+        let memory[0] = value;
+        return;
     }
 
     /** Finds an available RAM block of the given size and returns
      *  a reference to its base address. */
     function int alloc(int size) {
+        var Array cur;
+        var Array next;
+        var boolean found;
+
+        if ((size + 2) > heapSize) {
+            return -1;
+        }
+
+        let cur = heapBase;
+        let found = false;
+        while ((~found) & (~(cur[1] = 0))) {
+            let next = cur[1];
+            if (next[0] > size + 2) {
+                let found = true;
+
+                let cur[1] = next + size + 2;
+                // move cur to next segment
+                let cur = cur[1];
+                let cur[0] = next[0] - size - 2;
+                let cur[0] = next[1];
+                let next[0] = size;
+                let next[1] = 0;
+
+                let heapSize = heapSize - size - 2;
+            } else {
+                let cur = next;
+            }
+        }
+        if (~found) {
+            return -1;
+        }
+
+        return next;
     }
 
     /** De-allocates the given object (cast as an array) by making
      *  it available for future allocations. */
     function void deAlloc(Array o) {
-    }    
+        var Array cur;
+        var Array next;
+
+        let cur = heapBase;
+        while (~(cur[1] = 0)) {
+            let cur = cur[1];
+        }
+
+        let cur[1] = o;
+        let heapSize = heapSize + o[0] + 2;
+        return;
+    }
 }
